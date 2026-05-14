@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Preparo de Banco – Sistema Domínio</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f0f2f5;
+      color: #2c2c2c;
+      min-height: 100vh;
+    }
+
+    header {
+      background: linear-gradient(135deg, #1a3a5c, #2563a8);
+      color: white;
+      padding: 28px 40px;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.25);
+    }
+
+    header .logo {
+      width: 52px;
+      height: 52px;
+      background: white;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+    }
+
+    header h1 { font-size: 1.7rem; font-weight: 700; letter-spacing: 0.3px; }
+    header p  { font-size: 0.9rem; opacity: 0.8; margin-top: 3px; }
+
+    .container {
+      max-width: 900px;
+      margin: 36px auto;
+      padding: 0 20px 60px;
+    }
+
+    /* PROGRESS */
+    .progress-bar-wrap {
+      background: white;
+      border-radius: 14px;
+      padding: 22px 28px;
+      margin-bottom: 28px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+    }
+
+    .progress-bar-wrap h3 {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #888;
+      margin-bottom: 10px;
+    }
+
+    .progress-bar-outer {
+      background: #e4e8ee;
+      border-radius: 999px;
+      height: 14px;
+      overflow: hidden;
+    }
+
+    .progress-bar-inner {
+      height: 100%;
+      background: linear-gradient(90deg, #2563a8, #38bdf8);
+      border-radius: 999px;
+      width: 0%;
+      transition: width 0.4s ease;
+    }
+
+    .progress-label {
+      margin-top: 8px;
+      font-size: 0.88rem;
+      color: #555;
+      text-align: right;
+    }
+
+    /* CARD */
+    .card {
+      background: white;
+      border-radius: 16px;
+      padding: 28px 32px;
+      margin-bottom: 24px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+      border-left: 5px solid #2563a8;
+    }
+
+    .card h2 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #1a3a5c;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .card h2 .badge {
+      font-size: 0.7rem;
+      background: #e0edff;
+      color: #2563a8;
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .card .subtitle {
+      font-size: 0.88rem;
+      color: #888;
+      margin-bottom: 20px;
+    }
+
+    /* QUESTION */
+    .question-block {
+      background: #f8fafc;
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 20px 24px;
+      margin-bottom: 20px;
+    }
+
+    .question-block p {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #1a3a5c;
+      margin-bottom: 14px;
+    }
+
+    .btn-group { display: flex; gap: 12px; flex-wrap: wrap; }
+
+    .btn-choice {
+      padding: 10px 28px;
+      border-radius: 8px;
+      border: 2px solid #2563a8;
+      background: white;
+      color: #2563a8;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-choice:hover    { background: #2563a8; color: white; }
+    .btn-choice.active-sim { background: #16a34a; border-color: #16a34a; color: white; }
+    .btn-choice.active-nao { background: #dc2626; border-color: #dc2626; color: white; }
+
+    /* FLOW */
+    .flow-section { display: none; animation: fadeIn 0.35s ease; }
+    .flow-section.visible { display: block; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .flow-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      padding: 5px 14px;
+      border-radius: 999px;
+      margin-bottom: 16px;
+    }
+
+    .flow-label.sim { background: #dcfce7; color: #16a34a; }
+    .flow-label.nao { background: #fee2e2; color: #dc2626; }
+
+    /* CHECKLIST */
+    .checklist {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .checklist li {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 14px 18px;
+      border-radius: 10px;
+      background: #f8fafc;
+      border: 1.5px solid #e2e8f0;
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+
+    .checklist li:hover  { border-color: #2563a8; background: #eff6ff; }
+    .checklist li.checked { background: #f0fdf4; border-color: #86efac; }
+    .checklist li.checked .item-text { text-decoration: line-through; color: #aaa; }
+
+    .checklist li input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      accent-color: #16a34a;
+      cursor: pointer;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .item-content { flex: 1; }
+
+    .item-text {
+      font-size: 0.95rem;
+      color: #2c2c2c;
+      font-weight: 500;
+      line-height: 1.4;
+    }
+
+    .item-note {
+      font-size: 0.8rem;
+      color: #888;
+      margin-top: 3px;
+    }
+
+    /* LINKS DE FERRAMENTA */
+    .item-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .item-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.8rem;
+      color: #2563a8;
+      text-decoration: none;
+      font-weight: 600;
+      background: #e0edff;
+      padding: 4px 11px;
+      border-radius: 6px;
+      transition: background 0.2s;
+    }
+
+    .item-link:hover { background: #bfdbfe; }
+
+    .item-link.green {
+      color: #15803d;
+      background: #dcfce7;
+    }
+
+    .item-link.green:hover { background: #bbf7d0; }
+
+    /* ALERT */
+    .alert {
+      background: #fffbeb;
+      border: 1.5px solid #fcd34d;
+      border-radius: 10px;
+      padding: 14px 18px;
+      font-size: 0.88rem;
+      color: #92400e;
+      margin-bottom: 18px;
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    }
+
+    /* TOOLS GRID */
+    .tools-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 14px;
+      margin-top: 6px;
+    }
+
+    .tool-card {
+      background: #f8fafc;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 16px 18px;
+      text-decoration: none;
+      color: inherit;
+      transition: all 0.2s;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .tool-card:hover {
+      border-color: #2563a8;
+      background: #eff6ff;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 14px rgba(37,99,168,0.12);
+    }
+
+    .tool-card .tool-icon  { font-size: 1.5rem; }
+    .tool-card .tool-name  { font-weight: 700; font-size: 0.92rem; color: #1a3a5c; }
+    .tool-card .tool-desc  { font-size: 0.78rem; color: #888; }
+
+    /* RESET */
+    .btn-reset {
+      display: block;
+      margin: 0 auto;
+      padding: 12px 36px;
+      background: #f1f5f9;
+      border: 2px solid #cbd5e1;
+      border-radius: 10px;
+      color: #475569;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-reset:hover { background: #e2e8f0; border-color: #94a3b8; }
+
+    /* COMPLETE BANNER */
+    .complete-banner {
+      display: none;
+      background: linear-gradient(135deg, #16a34a, #15803d);
+      color: white;
+      border-radius: 14px;
+      padding: 24px 32px;
+      text-align: center;
+      margin-top: 24px;
+      animation: fadeIn 0.4s ease;
+    }
+
+    .complete-banner.show { display: block; }
+    .complete-banner h2   { font-size: 1.4rem; margin-bottom: 6px; }
+    .complete-banner p    { font-size: 0.92rem; opacity: 0.9; }
+
+    @media (max-width: 600px) {
+      header { padding: 20px; }
+      .card  { padding: 20px 18px; }
+      .container { margin: 20px auto; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">🗄️</div>
+  <div>
+    <h1>Preparo de Banco</h1>
+    <p>Roteiro técnico de implantação – Sistema Domínio</p>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- PROGRESS -->
+  <div class="progress-bar-wrap">
+    <h3>Progresso do Preparo</h3>
+    <div class="progress-bar-outer">
+      <div class="progress-bar-inner" id="progressBar"></div>
+    </div>
+    <div class="progress-label" id="progressLabel">0 de 0 etapas concluídas</div>
+  </div>
+
+  <!-- ETAPA 1 -->
+  <div class="card">
+    <h2>🔍 Etapa 1 <span class="badge">Ponto de Partida</span></h2>
+    <p class="subtitle">Antes de iniciar, identifique se o cliente possui conversão de dados de outro sistema.</p>
+
+    <div class="question-block">
+      <p>📦 O cliente tem conversão de dados?</p>
+      <div class="btn-group">
+        <button class="btn-choice" id="btnSim" onclick="selectConversao('sim')">✅ Sim, tem conversão</button>
+        <button class="btn-choice" id="btnNao" onclick="selectConversao('nao')">❌ Não tem conversão</button>
+      </div>
+    </div>
+
+    <!-- ── FLUXO SIM ── -->
+    <div class="flow-section" id="flowSim">
+      <span class="flow-label sim">✅ Com conversão</span>
+
+      <div class="alert">
+        ⚠️ <span><strong>Atenção:</strong> O preparo de banco deve ser realizado <u>após</u> a conclusão da conversão dos dados.</span>
+      </div>
+
+      <ul class="checklist" id="checklistSim">
+
+        <li onclick="toggleItem(this)">
+          <input type="checkbox" onclick="event.stopPropagation(); toggleItem(this.parentElement)"/>
+          <div class="item-content">
+            <div class="item-text">Aguardar a conclusão da conversão antes de iniciar</div>
+            <div class="item-note">Não realizar o preparo com dados incompletos ou em migração.</div>
+          </div>
+        </li>
+
+        <li onclick="toggleItem(this)">
+          <input type="checkbox" onclick="event.stopPropagation(); toggleItem(this.parentElement)"/>
+          <div class="item-content">
+            <div class="item-text">Pegar a planilha da conversão e levantar os regimes com o cliente</div>
+            <div class="item-note">Identificar regime de apuração de cada empresa: Caixa, Competência, Lucro Presumido, etc.</div>
+          </div>
+        </li>
+
+        <li onclick="toggleItem(this)">
+          <input type="checkbox" onclick="event.stopPropagation(); toggleItem(this.parentElement)"/>
+          <div class="item-content">
+            <div class="item-text">Alterar vigência e período inicial nas empresas padrões</div>
+            <div class="item-note">Ajustar conforme a data de início de uso do sistema pelo cliente.</div>
+          </div>
+        </li>
+
+        <li onclick="toggleItem(this)">
+          <input type="checkbox" onclick="event.stopPropagation(); toggleItem(this.parentElement)"/>
+          <div class="item-content">
+            <div class="item-text">Importar os perfis em lote</div>
+            <div class="item-note">Verificar opção "Importar Seleção". Verificar e criar perfil MEI se necessário.</div>
+          </div>
+        </li>
+
+        <li onclick="toggleItem(this)">
+          <input type="checkbox" onclick="event.stopPropagation(); toggleItem(this.parentElement)"/>
+          <div class="item-content">
+            <div class="item-text">Importar RBT12 e Valor Folha</div>
+            <div class="item-note">Utilizar o Importador RBT12 para realizar a importação em lote dos valores.</div>
+            <div class="item-links">
+              <a class="item-link green" href="https://iramalho1980.github.io/converte_empresas/" target="_blank" onclick="event.stopPropagation()">
+                📥 Importador RBT12
+              </a>
+            </div>
+          </div>
+        </li>
+
+      </ul>
+    </div>
+
+    <!-- ── FLUXO NÃO ── -->
+    <div class="flow-section" id="flowNao">
+      <span class="flow-label nao">❌ Sem conversão</span>
+
+      <ul class="checklist" id="checklistNao">
+
+        <li onclick="toggleItem(this)">
+          <input type="checkbox" onclick="event.stopPropagation(); toggleItem(this.parentElement)"/>
+          <div class="item-content">
+            <div class="item-text">Pegar a relação de CNPJs do cliente</div>
+            <div class="item-note">Solicitar lista completa de CNPJs para cadastro e configuração.</div>
+          </div>
+        </li>
+
+        <li onclick="toggleItem(this)">
+          <input type="checkbox" onclick="event.stopPropagation(); toggleItem(this.parentElement)"/>
+          <div class="item-content">
+            <div class="item-text">Importar os CNPJs via e-Conversor de Empresas</div>
+            <div class="item-note">Importar os dados base das empresas a partir da relação de CNPJs fornecida pelo cliente.</div>
+            <div class="item-links">
+              <a class="item-link" href="https://insightsenseivan.github.io/converteEmpresas/" target="_blank" onclick="event.stopPropagation()">
+                🏢 e-Conversor de Empresas
+              </a>
+            </div>
+          </div>
+        </li>
+
+        <li onclick="toggleItem(this)">
+          <input type="checkbox" onclick="event.stopPropagation(); toggleItem(this.parentElement)"/>
+          <div class="item-content">
+            <div class="item-text">Alterar vigência e período inicial nas empresas padrões</div>
+            <div class="item-note">Ajustar conforme a data de início de uso do sistema pelo cliente.</div>
+          </div>
+        </li>
+
+        <li onclick="toggleItem(this)">
+          <input type="checkbox" onclick="event.stopPropagation(); toggleItem(this.parentElement)"/>
+          <div class="item-content">
+            <div class="item-text">Importar os perfis em lote</div>
+            <div class="item-note">Verificar opção "Importar Seleção". Verificar e criar perfil MEI se necessário.</div>
+          </div>
+        </li>
+
+        <li onclick="toggleItem(this)">
+          <input type="checkbox" onclick="event.stopPropagation(); toggleItem(this.parentElement)"/>
+          <div class="item-content">
+            <div class="item-text">Importar RBT12 e Valor Folha</div>
+            <div class="item-note">Utilizar o Importador RBT12 para realizar a importação em lote dos valores.</div>
+            <div class="item-links">
+              <a class="item-link green" href="https://iramalho1980.github.io/converte_empresas/" target="_blank" onclick="event.stopPropagation()">
+                📥 Importador RBT12
+              </a>
+            </div>
+          </div>
+        </li>
+
+        <li onclick="toggleItem(this)">
+          <input type="checkbox" onclick="event.stopPropagation(); toggleItem(this.parentElement)"/>
+          <div class="item-content">
+            <div class="item-text">Importar listagem eSocial</div>
+            <div class="item-note">Verificar opção "Importar Empregados" se aplicável ao cliente.</div>
+          </div>
+        </li>
+
+      </ul>
+    </div>
+  </div>
+
+  <!-- ETAPA 2: VERIFICAÇÃO FINAL -->
+  <div class="card" id="etapa2" style="display:none;">
+    <h2>✅ Etapa 2 <span class="badge">Verificação Final</span></h2>
+    <p class="subtitle">Antes de encerrar o preparo, confirme os itens abaixo.</p>
+
+    <ul class="checklist" id="checklistFinal">
+
+      <li onclick="toggleItem(this)">
+        <input type="checkbox" onclick="event.stopPropagation(); toggleItem(this.parentElement)"/>
+        <div class="item-content">
+          <div class="item-text">Conferir se todos os regimes tributários estão corretamente configurados</div>
+          <div class="item-note">Simples Nacional (Caixa / Competência / Fator R), Lucro Presumido, etc.</div>
+        </div>
+      </li>
+
+      <li onclick="toggleItem(this)">
+        <input type="checkbox" onclick="event.stopPropagation(); toggleItem(this.parentElement)"/>
+        <div class="item-content">
+          <div class="item-text">Confirmar que os perfis MEI foram criados e configurados</div>
+          <div class="item-note">Verificar DASN-SIMEI e parâmetros específicos do MEI.</div>
+        </div>
+      </li>
+
+      <li onclick="toggleItem(this)">
+        <input type="checkbox" onclick="event.stopPropagation(); toggleItem(this.parentElement)"/>
+        <div class="item-content">
+          <div class="item-text">Validar RBT12 importado com os valores do cliente</div>
+          <div class="item-note">Conferir receita bruta acumulada dos últimos 12 meses para cada empresa.</div>
+        </div>
+      </li>
+
+      <li onclick="toggleItem(this)">
+        <input type="checkbox" onclick="event.stopPropagation(); toggleItem(this.parentElement)"/>
+        <div class="item-content">
+          <div class="item-text">Registrar observações e pendências do cliente</div>
+          <div class="item-note">Documentar qualquer ponto que precise ser resolvido no treinamento.</div>
+        </div>
+      </li>
+
+      <li onclick="toggleItem(this)">
+        <input type="checkbox" onclick="event.stopPropagation(); toggleItem(this.parentElement)"/>
+        <div class="item-content">
+          <div class="item-text">Banco de dados pronto para o treinamento ✅</div>
+          <div class="item-note">Objetivo: chegar ao treinamento já fechando empresas, sem perda de tempo com parametrizações básicas.</div>
+        </div>
+      </li>
+
+    </ul>
+  </div>
+
+  <!-- BANNER CONCLUSÃO -->
+  <div class="complete-banner" id="completeBanner">
+    <h2>🎉 Preparo Concluído!</h2>
+    <p>Todas as etapas foram cumpridas. O banco está pronto para o treinamento.</p>
+  </div>
+
+  <!-- FERRAMENTAS -->
+  <div class="card" id="ferramentas">
+    <h2>🛠️ Ferramentas Utilizadas</h2>
+    <p class="subtitle">Acesso rápido às ferramentas do processo de preparo.</p>
+
+    <div class="tools-grid">
+
+      <a class="tool-card" href="https://iramalho1980.github.io/converte_empresas/" target="_blank">
+        <span class="tool-icon">📥</span>
+        <span class="tool-name">Importador RBT12</span>
+        <span class="tool-desc">Importação de RBT12 e Valor Folha em lote</span>
+      </a>
+
+      <a class="tool-card" href="https://insightsenseivan.github.io/converteEmpresas/" target="_blank">
+        <span class="tool-icon">🏢</span>
+        <span class="tool-name">e-Conversor de Empresas</span>
+        <span class="tool-desc">Importação de CNPJs e dados base das empresas</span>
+      </a>
+
+      <a class="tool-card" href="https://suporte.dominioatendimento.com" target="_blank">
+        <span class="tool-icon">📚</span>
+        <span class="tool-name">Central de Soluções</span>
+        <span class="tool-desc">Portal de atendimento e documentação Domínio</span>
+      </a>
+
+      <a class="tool-card" href="#" title="Substitua pelo link real">
+        <span class="tool-icon">📋</span>
+        <span class="tool-name">Planilha de Conversão</span>
+        <span class="tool-desc">Planilha com dados e regimes do cliente convertido</span>
+      </a>
+
+      <a class="tool-card" href="#" title="Substitua pelo link real">
+        <span class="tool-icon">👤</span>
+        <span class="tool-name">Importação de Perfis</span>
+        <span class="tool-desc">Importação de perfis em lote / importar seleção</span>
+      </a>
+
+      <a class="tool-card" href="#" title="Substitua pelo link real">
+        <span class="tool-icon">📝</span>
+        <span class="tool-name">Importação eSocial</span>
+        <span class="tool-desc">Listagem e importação de empregados eSocial</span>
+      </a>
+
+    </div>
+  </div>
+
+  <button class="btn-reset" onclick="resetAll()">🔄 Reiniciar Checklist</button>
+
+</div>
+
+<script>
+  let conversaoChoice = null;
+
+  function selectConversao(choice) {
+    conversaoChoice = choice;
+
+    document.getElementById('btnSim').className = 'btn-choice' + (choice === 'sim' ? ' active-sim' : '');
+    document.getElementById('btnNao').className = 'btn-choice' + (choice === 'nao' ? ' active-nao' : '');
+
+    document.getElementById('flowSim').classList.toggle('visible', choice === 'sim');
+    document.getElementById('flowNao').classList.toggle('visible', choice === 'nao');
+
+    document.getElementById('etapa2').style.display = 'block';
+
+    updateProgress();
+  }
+
+  function toggleItem(li) {
+    const cb = li.querySelector('input[type="checkbox"]');
+    cb.checked = !cb.checked;
+    li.classList.toggle('checked', cb.checked);
+    updateProgress();
+  }
+
+  function updateProgress() {
+    const allCheckboxes = [];
+
+    if (conversaoChoice === 'sim') {
+      allCheckboxes.push(...document.querySelectorAll('#checklistSim input[type="checkbox"]'));
+    } else if (conversaoChoice === 'nao') {
+      allCheckboxes.push(...document.querySelectorAll('#checklistNao input[type="checkbox"]'));
+    }
+
+    allCheckboxes.push(...document.querySelectorAll('#checklistFinal input[type="checkbox"]'));
+
+    const total = allCheckboxes.length;
+    const done  = allCheckboxes.filter(cb => cb.checked).length;
+    const pct   = total > 0 ? Math.round((done / total) * 100) : 0;
+
+    document.getElementById('progressBar').style.width = pct + '%';
+    document.getElementById('progressLabel').textContent =
+      `${done} de ${total} etapas concluídas (${pct}%)`;
+
+    const banner = document.getElementById('completeBanner');
+    if (total > 0 && done === total) {
+      banner.classList.add('show');
+      banner.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    } else {
+      banner.classList.remove('show');
+    }
+  }
+
+  function resetAll() {
+    if (!confirm('Deseja reiniciar todo o checklist?')) return;
+
+    conversaoChoice = null;
+    document.getElementById('btnSim').className = 'btn-choice';
+    document.getElementById('btnNao').className = 'btn-choice';
+    document.getElementById('flowSim').classList.remove('visible');
+    document.getElementById('flowNao').classList.remove('visible');
+    document.getElementById('etapa2').style.display = 'none';
+    document.getElementById('completeBanner').classList.remove('show');
+
+    document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+      cb.checked = false;
+      cb.closest('li').classList.remove('checked');
+    });
+
+    updateProgress();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+</script>
+
+</body>
+</html>
