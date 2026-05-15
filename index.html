@@ -150,7 +150,7 @@
       transition: all 0.2s;
     }
 
-    .btn-choice:hover    { background: #2563a8; color: white; }
+    .btn-choice:hover     { background: #2563a8; color: white; }
     .btn-choice.active-sim { background: #16a34a; border-color: #16a34a; color: white; }
     .btn-choice.active-nao { background: #dc2626; border-color: #dc2626; color: white; }
 
@@ -199,7 +199,7 @@
       cursor: pointer;
     }
 
-    .checklist li:hover  { border-color: #2563a8; background: #eff6ff; }
+    .checklist li:hover   { border-color: #2563a8; background: #eff6ff; }
     .checklist li.checked { background: #f0fdf4; border-color: #86efac; }
     .checklist li.checked .item-text { text-decoration: line-through; color: #aaa; }
 
@@ -227,7 +227,6 @@
       margin-top: 3px;
     }
 
-    /* LINKS DE FERRAMENTA */
     .item-links {
       display: flex;
       flex-wrap: wrap;
@@ -257,6 +256,13 @@
     }
 
     .item-link.green:hover { background: #bbf7d0; }
+
+    .item-link.purple {
+      color: #7e22ce;
+      background: #f3e8ff;
+    }
+
+    .item-link.purple:hover { background: #e9d5ff; }
 
     /* ALERT */
     .alert {
@@ -300,9 +306,9 @@
       box-shadow: 0 4px 14px rgba(37,99,168,0.12);
     }
 
-    .tool-card .tool-icon  { font-size: 1.5rem; }
-    .tool-card .tool-name  { font-weight: 700; font-size: 0.92rem; color: #1a3a5c; }
-    .tool-card .tool-desc  { font-size: 0.78rem; color: #888; }
+    .tool-card .tool-icon { font-size: 1.5rem; }
+    .tool-card .tool-name { font-weight: 700; font-size: 0.92rem; color: #1a3a5c; }
+    .tool-card .tool-desc { font-size: 0.78rem; color: #888; }
 
     /* RESET */
     .btn-reset {
@@ -497,6 +503,11 @@
           <div class="item-content">
             <div class="item-text">Importar listagem eSocial</div>
             <div class="item-note">Verificar opção "Importar Empregados" se aplicável ao cliente.</div>
+            <div class="item-links">
+              <a class="item-link purple" href="https://listagemesocial.streamlit.app/" target="_blank" onclick="event.stopPropagation()">
+                👥 Listagem eSocial
+              </a>
+            </div>
           </div>
         </li>
 
@@ -579,6 +590,12 @@
         <span class="tool-desc">Importação de CNPJs e dados base das empresas</span>
       </a>
 
+      <a class="tool-card" href="https://listagemesocial.streamlit.app/" target="_blank">
+        <span class="tool-icon">👥</span>
+        <span class="tool-name">Listagem eSocial</span>
+        <span class="tool-desc">Listagem e importação de empregados eSocial</span>
+      </a>
+
       <a class="tool-card" href="https://suporte.dominioatendimento.com" target="_blank">
         <span class="tool-icon">📚</span>
         <span class="tool-name">Central de Soluções</span>
@@ -595,12 +612,6 @@
         <span class="tool-icon">👤</span>
         <span class="tool-name">Importação de Perfis</span>
         <span class="tool-desc">Importação de perfis em lote / importar seleção</span>
-      </a>
-
-      <a class="tool-card" href="#" title="Substitua pelo link real">
-        <span class="tool-icon">📝</span>
-        <span class="tool-name">Importação eSocial</span>
-        <span class="tool-desc">Listagem e importação de empregados eSocial</span>
       </a>
 
     </div>
